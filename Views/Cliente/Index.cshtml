@@ -1,0 +1,79 @@
+﻿@model IEnumerable<WebApplication1.Models.Cliente>
+
+@{ 
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Adicionar Clientes", "Create")
+</p>
+<table class="table" id="tblClientes">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Ddd)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Numero)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.Nome)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Ddd)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Numero)
+    </td>
+    <td>
+        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+        <button type="button" class="btn btn-link" data-item="@item.Id">Deletar</button>
+    </td>
+</tr>
+}
+
+</table>
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".btn-link").click(function () {
+                var id = $(this).attr('data-item');
+                if (confirm("tem certeza que gostaria de excluir este registro?")) {
+                    $.ajax({
+                        method: "POST",
+                        url: "/Cliente/Delete/" + id,
+                        success: function (data) {
+                            $("#tblCliente tbody > tr").remove();
+                            $.each(data, function (i, cliente) {
+                                $("#tblPessoas tbody").append(
+                                    "<tr>" +
+                                    "   <td>" + cliente.Nome + "</td>" +
+                                    "   <td>" + cliente.Ddd + "</td>" +
+                                    "   <td>" + cliente.Numero + "</td>" +
+                                    "   <td>" +
+                                    "       <a href='/Cliente/Edit/" + cliente.Id + "'>Editar</a> |" +
+                                    "       <button type=\"button\" class=\"btn btn-link\" data-item=\"" + cliente.Id + "\">Deletar</button>" +
+                                    "   </td>" +
+                                    "</tr>"
+                                );
+                            });
+                        },
+                        error: function (data) {
+                            alert("Ocorreu um erro na pesquisa.");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
